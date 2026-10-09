@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Dashboard - Biometric Breaker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<nav class="nav">
+  <div class="container">
+    <div class="nav-brand"><span class="dot"></span> Biometric Breaker</div>
+    <div class="nav-links">
+      <span class="small flex items-center gap-12" id="connIndicator">
+        <span class="icon icon-sm" data-icon="wifi-off"></span> Checking connection&hellip;
+      </span>
+      <a href="index.html">Site</a>
+      <button class="btn btn-secondary flex items-center gap-12" id="logoutBtn">
+        <span class="icon icon-sm" data-icon="log-out"></span> Log out
+      </button>
+    </div>
+  </div>
+</nav>
+
+<main class="container section-tight">
+
+  <div class="page-header fade-in">
+    <h1>Admin Dashboard</h1>
+    <p>Live breaker status, operator registration and a full event history &mdash; synced from Firebase in real time.</p>
+  </div>
+
+  <!-- KPI overview -->
+  <div class="kpi-grid fade-in" style="animation-delay:.03s">
+    <div class="kpi-card">
+      <div class="icon-chip blue"><span class="icon" data-icon="activity"></span></div>
+      <div><div class="num" id="statTotal">0</div><div class="lbl">Total events</div></div>
+    </div>
+    <div class="kpi-card">
+      <div class="icon-chip green"><span class="icon" data-icon="bolt"></span></div>
+      <div><div class="num" id="statOn">0</div><div class="lbl">Times ON</div></div>
+    </div>
+    <div class="kpi-card">
+      <div class="icon-chip amber"><span class="icon" data-icon="x-circle"></span></div>
+      <div><div class="num" id="statDenied">0</div><div class="lbl">Access denied</div></div>
+    </div>
+    <div class="kpi-card">
+      <div class="icon-chip violet"><span class="icon" data-icon="users"></span></div>
+      <div><div class="num" id="statOperators">0</div><div class="lbl">Registered operators</div></div>
+    </div>
+  </div>
+
+  <!-- Live status -->
+  <div class="panel panel-accent fade-in" style="animation-delay:.06s">
+    <div class="panel-header">
+      <div class="panel-title">
+        <div class="icon-chip blue"><span class="icon" data-icon="activity"></span></div>
+        <h2>System Status</h2>
+      </div>
+      <span class="small" id="lastSync">&mdash;</span>
+    </div>
+
+    <div class="breaker-indicator">
+      <div class="breaker-orb is-off" id="breakerOrb">
+        <span class="icon" data-icon="power"></span>
+      </div>
+      <div>
+        <h3 id="statusText">Checking status&hellip;</h3>
+        <div class="sub" id="statusSub">Waiting for the device's first heartbeat.</div>
+      </div>
+    </div>
+
+    <div class="meta-row">
+      <div class="meta-item">
+        <div class="label">Last Operator</div>
+        <div class="value" id="lastOperator">&mdash;</div>
+      </div>
+      <div class="meta-item">
+        <div class="label">Last Event</div>
+        <div class="value" id="lastEventTime">&mdash;</div>
+      </div>
+      <div class="meta-item">
+        <div class="label">Device</div>
+        <div class="value" id="deviceOnline">&mdash;</div>
+      </div>
+    </div>
+
+    <div class="status-note" id="statusNote">
+      <span class="icon" data-icon="activity"></span>
+      <span>Connecting to the live database&hellip;</span>
+    </div>
+
+    <p class="small" style="margin-top:14px;margin-bottom:0">
+      This panel is read-only. There is no remote ON and no remote OFF
+      control here by design.
+    </p>
+  </div>
+
+  <div class="dash-grid" style="margin-top:20px">
+    <!-- Operator registration -->
+    <div class="panel panel-accent violet fade-in" style="animation-delay:.1s">
+      <div class="panel-header">
+        <div class="panel-title">
+          <div class="icon-chip violet"><span class="icon" data-icon="fingerprint"></span></div>
+          <h2>Operator Registration</h2>
+        </div>
+      </div>
+      <form id="registerForm">
+        <div class="field">
+          <label for="regUsername">Username</label>
+          <input type="text" id="regUsername" required placeholder="e.g. j.moyo">
+        </div>
+        <div class="field">
+          <label for="regPassword">PIN</label>
+          <div class="password-field">
+            <input type="password" id="regPassword" required inputmode="numeric" pattern="[0-9]{4}"
+                   minlength="4" maxlength="4" autocomplete="off"
+                   placeholder="4-digit PIN, e.g. 4829">
+            <button type="button" class="password-toggle" id="regPwToggle" aria-label="Show PIN">
+              <span class="icon icon-sm" data-icon="eye"></span>
+            </button>
+          </div>
+          <div class="hint">Digits only (0-9), exactly 4 - the physical keypad has no letters the
+            operator could type this with other than A-D, so a numeric PIN is the only thing
+            guaranteed to be enterable. Stored as a SHA-256 hash, never in plain text.</div>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block flex items-center gap-12" style="justify-content:center">
+          <span class="icon icon-sm" data-icon="plus-circle"></span> Register Operator
+        </button>
+        <div id="regMsg" class="form-msg"></div>
+      </form>
+      <p class="small" style="margin-top:14px">
+        After registering, the operator places their finger on the sensor
+        when the device prompts &mdash; the microcontroller checks for new
+        registrations automatically and walks them through enrolment.
+      </p>
+
+      <div class="panel-header" style="margin-top:26px">
+        <div class="panel-title">
+          <div class="icon-chip violet" style="width:30px;height:30px;border-radius:9px">
+            <span class="icon icon-sm" data-icon="users"></span>
+          </div>
+          <h2 style="font-size:0.98rem">Registered Operators</h2>
+        </div>
+      </div>
+      <div class="table-scroll">
+        <table>
+          <thead><tr><th>Username</th><th>Fingerprint</th><th>Status</th></tr></thead>
+          <tbody id="operatorsBody">
+            <tr class="empty-row"><td colspan="3">No operators registered yet.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- History -->
+    <div class="panel panel-accent teal fade-in" style="animation-delay:.14s">
+      <div class="panel-header">
+        <div class="panel-title">
+          <div class="icon-chip teal"><span class="icon" data-icon="list"></span></div>
+          <h2>History</h2>
+        </div>
+      </div>
+
+      <div class="table-scroll">
+        <table>
+          <thead><tr><th>Time</th><th>Operator</th><th>Event</th><th>Result</th></tr></thead>
+          <tbody id="eventsBody">
+            <tr class="empty-row"><td colspan="4">No events yet.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="small" style="margin-top:14px;margin-bottom:0">
+        Read-only, newest first, synced from Firebase in real time.
+      </p>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <div class="container">
+  </div>
+</footer>
+
+<!-- Firebase (compat SDK API) -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script src="js/icons.js"></script>
+<script src="js/toast.js"></script>
+<script src="js/auth-check.js"></script>
+<script src="js/firebase-config.js"></script>
+<script src="js/dashboard.js"></script>
+</body>
+</html>

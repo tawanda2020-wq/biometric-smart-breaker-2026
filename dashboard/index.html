@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Biometric Fingerprint Smart Circuit Breaker</title>
+<meta name="description" content="A circuit breaker that only authenticated operators can turn on - with an emergency OFF that works no matter what.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<nav class="nav">
+  <div class="container">
+    <div class="nav-brand"><span class="dot"></span> Biometric Breaker</div>
+    <div class="nav-links">
+      <a href="#features">Features</a>
+      <a href="#how-it-works">How it works</a>
+      <a href="#safety">Safety</a>
+      <a href="login.html" class="btn btn-secondary">Admin Login</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="container">
+    <h1 class="display fade-in" style="animation-delay:.06s">Security that's<br>hardwired in.</h1>
+    <div class="hero-cta fade-in" style="animation-delay:.18s">
+      <a href="login.html" class="btn btn-primary btn-lg">Admin Login</a>
+      <a href="#how-it-works" class="btn btn-secondary btn-lg">See how it works</a>
+    </div>
+  </div>
+</header>
+
+<section id="features" class="section">
+  <div class="container">
+    <p class="eyebrow text-center reveal" style="display:block">Why it's different</p>
+    <div class="grid">
+      <div class="card reveal">
+        <div class="icon-circle-lg"><span class="icon" data-icon="lock"></span></div>
+        <h3>Dual-factor authentication</h3>
+      </div>
+      <div class="card reveal reveal-delay-1">
+        <div class="icon-circle-lg"><span class="icon" data-icon="bolt"></span></div>
+        <h3>Unconditional fail-safe OFF</h3>
+      </div>
+      <div class="card reveal reveal-delay-2">
+        <div class="icon-circle-lg"><span class="icon" data-icon="activity"></span></div>
+        <h3>Real-time monitoring</h3>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="how-it-works" class="section section-surface">
+  <div class="container">
+    <p class="eyebrow text-center reveal" style="display:block">How it works</p>
+    <h2 class="headline text-center reveal" style="margin-bottom:56px">From scan to switch-on.</h2>
+    <div class="grid">
+      <div class="card reveal">
+        <div class="icon-circle-lg step-num">1</div>
+        <h3>Scan &amp; verify</h3>
+        <p>The operator scans a registered fingerprint, then enters their
+        4-digit keypad PIN. Either one failing denies access - no breaker
+        movement, ever.</p>
+      </div>
+      <div class="card reveal reveal-delay-1">
+        <div class="icon-circle-lg step-num">2</div>
+        <h3>Confirm within 30s</h3>
+        <p>A short confirmation window prevents accidental energisation &
+        gives the operator a deliberate final action before power flows.</p>
+      </div>
+      <div class="card reveal reveal-delay-2">
+        <div class="icon-circle-lg step-num">3</div>
+        <h3>Breaker switches ON</h3>
+        <p>A servo physically operates a genuine miniature circuit breaker -
+        this isn't a relay standing in for one, it's the real protective
+        device, actuated for you.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="safety" class="section">
+  <div class="container">
+    <div class="dash-grid" style="align-items:center">
+      <div class="reveal">
+        <p class="eyebrow">Safety first</p>
+        <h2 class="headline">Turning it off never needs permission.</h2>
+      </div>
+      <div class="panel reveal reveal-delay-1">
+        <div class="breaker-indicator" style="margin-bottom:20px">
+          <div class="breaker-orb is-on" id="demoOrb">
+            <span class="icon" data-icon="power"></span>
+          </div>
+          <div>
+            <h3 id="demoStatusText" style="font-size:1.15rem">Breaker ON</h3>
+            <div class="sub" id="demoStatusSub">Energised and ready.</div>
+          </div>
+        </div>
+        <div class="mono small" id="demoTerminal" style="min-height:92px">
+          <p style="margin:0 0 6px;opacity:.5">root@breaker:~$ _</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section section-surface text-center">
+  <div class="container reveal">
+    <h2 class="headline">Manage operators and watch it live.</h2>
+    <p class="subhead" style="max-width:520px;margin:12px auto 30px">
+      Register fingerprints, monitor breaker status, and review the full
+      event log from the admin dashboard.
+    </p>
+    <a href="login.html" class="btn btn-primary btn-lg">Go to Admin Login</a>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+  </div>
+</footer>
+
+<script src="js/icons.js"></script>
+<script src="js/reveal.js"></script>
+<script>
+  // Small looping demo in the "Safety first" panel - purely illustrative
+  // (this page has no live device connection). Shows the same animated
+  // indicator the real admin dashboard uses, cycling ON -> OFF -> ON so a
+  // visitor actually sees the state-change animation without waiting.
+  (function () {
+    const orb = document.getElementById("demoOrb");
+    const text = document.getElementById("demoStatusText");
+    const sub = document.getElementById("demoStatusSub");
+    const terminal = document.getElementById("demoTerminal");
+
+    const offLines = [
+      "root@breaker:~$ press OFF button",
+      "&gt; kill-switch transistor cut &mdash; 0.0s",
+      "&gt; relay de-energised",
+      "&gt; controller status: irrelevant",
+    ];
+
+    function flip(toOn) {
+      orb.classList.add("is-flip");
+      setTimeout(() => orb.classList.remove("is-flip"), 550);
+      orb.classList.toggle("is-on", toOn);
+      orb.classList.toggle("is-off", !toOn);
+      text.textContent = toOn ? "Breaker ON" : "Breaker OFF";
+      sub.textContent = toOn ? "Energised and ready." : "Cut instantly - no login required.";
+
+      if (!toOn) {
+        terminal.innerHTML = "";
+        offLines.forEach((line, i) => {
+          setTimeout(() => {
+            const p = document.createElement("p");
+            p.style.margin = i === offLines.length - 1 ? "0" : "0 0 6px";
+            p.innerHTML = line;
+            p.className = "row-in";
+            terminal.appendChild(p);
+          }, i * 260);
+        });
+      } else {
+        terminal.innerHTML = '<p style="margin:0 0 6px;opacity:.5">root@breaker:~$ _</p>';
+      }
+    }
+
+    let isOn = true;
+    setInterval(() => {
+      isOn = !isOn;
+      flip(isOn);
+    }, 4200);
+  })();
+</script>
+</body>
+</html>

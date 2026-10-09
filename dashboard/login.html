@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Login - Biometric Breaker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<nav class="nav">
+  <div class="container">
+    <a href="index.html" class="nav-brand"><span class="dot"></span> Biometric Breaker</a>
+    <div class="nav-links">
+      <a href="index.html" class="flex items-center gap-12">
+        <span class="icon icon-sm" data-icon="arrow-left"></span> Back to site
+      </a>
+    </div>
+  </div>
+</nav>
+
+<div class="auth-wrap">
+  <div class="auth-card fade-in">
+    <div class="icon-badge"><span class="icon icon-lg" data-icon="lock"></span></div>
+    <h1 class="headline" style="font-size:1.6rem;margin-bottom:4px">Admin sign in</h1>
+    <p class="small" style="margin:0 0 24px">Access operator registration and live breaker status.</p>
+
+    <form id="loginForm">
+      <div class="field">
+        <label for="username">Username</label>
+        <input type="text" id="username" autocomplete="username" required>
+      </div>
+      <div class="field">
+        <label for="password">Password</label>
+        <div class="password-field">
+          <input type="password" id="password" autocomplete="current-password" required>
+          <button type="button" class="password-toggle" id="pwToggle" aria-label="Show password">
+            <span class="icon icon-sm" data-icon="eye"></span>
+          </button>
+        </div>
+      </div>
+      <button type="submit" class="btn btn-primary btn-block btn-lg">Sign In</button>
+      <div id="loginMsg" class="form-msg err"></div>
+    </form>
+  </div>
+</div>
+
+<script src="js/icons.js"></script>
+<script src="js/toast.js"></script>
+<script src="js/auth-check.js"></script>
+<script>
+  if (isLoggedIn()) window.location.href = "dashboard.html";
+
+  document.getElementById("loginForm").addEventListener("submit", function (e) {
+    e.preventDefault();
+    const username = document.getElementById("username").value.trim();
+    const password = document.getElementById("password").value;
+    const msg = document.getElementById("loginMsg");
+
+    if (attemptLogin(username, password)) {
+      showToast({ type: "success", title: "Signed in", message: "Loading the dashboard…", duration: 1200 });
+      setTimeout(() => window.location.href = "dashboard.html", 350);
+    } else {
+      msg.textContent = "Incorrect username or password.";
+      msg.classList.add("show");
+      showToast({ type: "error", title: "Sign in failed", message: "Check the username and password and try again." });
+    }
+  });
+
+  const pwInput = document.getElementById("password");
+  const pwToggle = document.getElementById("pwToggle");
+  const pwIcon = pwToggle.querySelector("[data-icon]");
+  pwToggle.addEventListener("click", function () {
+    const show = pwInput.type === "password";
+    pwInput.type = show ? "text" : "password";
+    pwIcon.innerHTML = "";
+    pwIcon.removeAttribute("data-rendered");
+    pwIcon.setAttribute("data-icon", show ? "eye-off" : "eye");
+    pwToggle.setAttribute("aria-label", show ? "Hide password" : "Show password");
+    renderIcons(pwToggle);
+  });
+</script>
+
+</body>
+</html>

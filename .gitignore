@@ -1,0 +1,6 @@
+# This repo only tracks dashboard/ - everything else in this working
+# folder (firmware, academic docs, reference images) stays local.
+*
+!dashboard/
+!dashboard/**
+!.gitignore
