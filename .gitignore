@@ -1,6 +1,10 @@
-# This repo only tracks dashboard/ - everything else in this working
-# folder (firmware, academic docs, reference images) stays local.
+# This repo only tracks the dashboard (now at repo root) - everything else
+# in this working folder (firmware, academic docs, reference images) stays
+# local and untracked.
 *
-!dashboard/
-!dashboard/**
+!css/
+!css/**
+!js/
+!js/**
+!*.html
 !.gitignore
