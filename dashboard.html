@@ -146,12 +146,17 @@
           <h2 style="font-size:0.98rem">Registered Operators</h2>
         </div>
       </div>
-      <div class="table-scroll">
+      <div id="operatorsEmpty" class="empty-state">
+        <div class="empty-state-icon"><span class="icon icon-lg" data-icon="users"></span></div>
+        <h3>No operators yet</h3>
+        <p>Register someone above and they'll appear here right away, first as
+          <span class="badge badge-timeout"><span class="icon" data-icon="clock"></span>Pending scan</span>
+          until they enrol their finger at the device.</p>
+      </div>
+      <div class="table-scroll" id="operatorsTableWrap" hidden>
         <table>
           <thead><tr><th>Username</th><th>Fingerprint</th><th>Status</th></tr></thead>
-          <tbody id="operatorsBody">
-            <tr class="empty-row"><td colspan="3">No operators registered yet.</td></tr>
-          </tbody>
+          <tbody id="operatorsBody"></tbody>
         </table>
       </div>
     </div>
@@ -165,17 +170,36 @@
         </div>
       </div>
 
-      <div class="table-scroll">
+      <div id="eventsEmpty" class="empty-state">
+        <div class="empty-state-icon"><span class="icon icon-lg" data-icon="activity"></span></div>
+        <h3>Listening for activity</h3>
+        <p>Nothing has happened at the device yet. Every scan, PIN entry and
+          button press will show up here the moment it happens &mdash; no
+          refresh needed.</p>
+      </div>
+      <div class="table-scroll" id="eventsTableWrap" hidden>
         <table>
           <thead><tr><th>Time</th><th>Operator</th><th>Event</th><th>Result</th></tr></thead>
-          <tbody id="eventsBody">
-            <tr class="empty-row"><td colspan="4">No events yet.</td></tr>
-          </tbody>
+          <tbody id="eventsBody"></tbody>
         </table>
       </div>
-      <p class="small" style="margin-top:14px;margin-bottom:0">
+      <p class="small" style="margin-top:14px;margin-bottom:14px">
         Read-only, newest first, synced from Firebase in real time.
       </p>
+
+      <details class="legend">
+        <summary>
+          <span class="icon icon-sm" data-icon="help-circle"></span>
+          What do these events mean?
+        </summary>
+        <div class="legend-grid">
+          <div class="legend-item"><span class="badge badge-on"><span class="icon" data-icon="check-circle"></span>ON</span><span>A verified operator scanned their finger, entered their PIN, and confirmed in time &mdash; the breaker energised.</span></div>
+          <div class="legend-item"><span class="badge badge-off"><span class="icon" data-icon="power"></span>OFF</span><span>The breaker was switched off, either by the panel button or the MCB's own automatic trip.</span></div>
+          <div class="legend-item"><span class="badge badge-denied"><span class="icon" data-icon="x-circle"></span>DENIED</span><span>A login attempt failed &mdash; wrong fingerprint or wrong PIN. The breaker stayed off.</span></div>
+          <div class="legend-item"><span class="badge badge-timeout"><span class="icon" data-icon="clock"></span>TIMEOUT</span><span>A correct login wasn't confirmed with a second key press in time, so it expired safely.</span></div>
+          <div class="legend-item"><span class="badge badge-lockout"><span class="icon" data-icon="lock"></span>LOCKOUT</span><span>Too many failed attempts in a row &mdash; the device paused all logins for 30 seconds.</span></div>
+        </div>
+      </details>
     </div>
   </div>
 </main>

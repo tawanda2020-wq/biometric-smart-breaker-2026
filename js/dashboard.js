@@ -97,6 +97,7 @@ function renderBreakerStatus() {
 
   orb.classList.toggle("is-on", isOn);
   orb.classList.toggle("is-off", !isOn);
+  orb.classList.toggle("is-waiting", !b.status);
   if (previousIsOn !== null && previousIsOn !== isOn) {
     orb.classList.add("is-flip");
     setTimeout(() => orb.classList.remove("is-flip"), 550);
@@ -268,8 +269,10 @@ function renderOperators(operatorsObj) {
   const tbody = document.getElementById("operatorsBody");
   const entries = Object.entries(operatorsObj || {});
   setNumberAnimated("statOperators", entries.length);
+  document.getElementById("operatorsEmpty").hidden = entries.length > 0;
+  document.getElementById("operatorsTableWrap").hidden = entries.length === 0;
   if (entries.length === 0) {
-    tbody.innerHTML = '<tr class="empty-row"><td colspan="3">No operators registered yet.</td></tr>';
+    tbody.innerHTML = "";
     knownOperatorIds = new Set();
     return;
   }
@@ -351,7 +354,7 @@ document.getElementById("operatorsBody").addEventListener("click", async (e) => 
     await db.ref("operators/" + id).update({ createdAt: nowSeconds() });
     showToast({
       type: "info",
-      icon: "refresh-cw",
+      icon: "rotate-cw",
       title: "Enrolment restarted",
       message: `${username} has another ${ENROLLMENT_TIMEOUT_SEC}s to scan at the device.`,
     });
@@ -387,8 +390,10 @@ function renderEvents(eventsObj) {
   setNumberAnimated("statOn", entries.filter(([, e]) => e.type === "ON").length);
   setNumberAnimated("statDenied", entries.filter(([, e]) => e.type === "DENIED").length);
 
+  document.getElementById("eventsEmpty").hidden = entries.length > 0;
+  document.getElementById("eventsTableWrap").hidden = entries.length === 0;
   if (entries.length === 0) {
-    tbody.innerHTML = '<tr class="empty-row"><td colspan="4">No events yet.</td></tr>';
+    tbody.innerHTML = "";
     knownEventIds = new Set();
     return;
   }

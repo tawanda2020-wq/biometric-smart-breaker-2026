@@ -438,6 +438,12 @@ footer .container { display: flex; justify-content: space-between; flex-wrap: wr
   border-color: color-mix(in srgb, var(--success) 40%, transparent);
   animation: pulseRing 2.2s ease-out infinite;
 }
+/* Before the device's first heartbeat ever arrives, a flat grey orb reads as
+   broken rather than "not heard from yet" - a slow breathing pulse signals
+   the page is actively waiting, not stuck. */
+.breaker-orb.is-waiting {
+  animation: waitPulse 2.4s ease-in-out infinite;
+}
 .breaker-orb.is-flip { animation: stateFlip 0.5s ease, pulseRing 2.2s ease-out infinite; }
 .breaker-orb.is-off.is-flip { animation: stateFlip 0.5s ease; }
 
@@ -616,6 +622,58 @@ footer .container { display: flex; justify-content: space-between; flex-wrap: wr
 .row-rail.rail-denied  { border-left-color: var(--danger); }
 .row-rail.rail-timeout { border-left-color: var(--warn); }
 .row-rail.rail-lockout { border-left-color: var(--danger); }
+
+/* ---------- Empty states (operator table / event log) ---------- */
+/* A plain "No events yet" row reads as dead/broken to a non-technical
+   operator - this instead explains what's coming and feels like the page
+   is actively listening, not stuck. */
+.empty-state {
+  text-align: center;
+  padding: 36px 20px;
+  border: 1px dashed var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+}
+.empty-state-icon {
+  width: 52px; height: 52px;
+  margin: 0 auto 14px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--accent-soft);
+  color: var(--accent);
+  animation: waitPulse 2.4s ease-in-out infinite;
+}
+@keyframes waitPulse {
+  0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 25%, transparent); }
+  50%      { box-shadow: 0 0 0 10px color-mix(in srgb, var(--accent) 0%, transparent); }
+}
+.empty-state h3 { font-size: 1rem; margin: 0 0 6px; }
+.empty-state p { font-size: 0.88rem; margin: 0; max-width: 40ch; margin-inline: auto; line-height: 1.5; }
+.empty-state .badge { vertical-align: -2px; margin: 0 2px; }
+
+/* ---------- Glossary (collapsible, plain-language event key) ---------- */
+.legend { margin-top: 18px; border-top: 1px solid var(--border); padding-top: 14px; }
+.legend summary {
+  cursor: pointer;
+  display: flex; align-items: center; gap: 8px;
+  font-size: 0.88rem; font-weight: 500; color: var(--text-secondary);
+  list-style: none;
+}
+.legend summary::-webkit-details-marker { display: none; }
+.legend summary:hover { color: var(--text); }
+.legend summary .icon { color: var(--accent); }
+.legend-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+  margin-top: 14px;
+  animation: fadeIn 0.25s ease both;
+}
+.legend-item {
+  display: flex; align-items: center; gap: 12px;
+  font-size: 0.85rem; color: var(--text-secondary); line-height: 1.4;
+}
+.legend-item .badge { flex-shrink: 0; min-width: 84px; justify-content: center; }
 
 /* ---------- Count-up number transition ---------- */
 .num-pop { animation: numPop 0.4s ease; }
