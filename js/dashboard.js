@@ -80,7 +80,9 @@ function setNumberAnimated(elId, value) {
 // ---------------------------------------------------------------------------
 // Live breaker status - animated orb + detailed plain-language notes
 // ---------------------------------------------------------------------------
-const STALE_AFTER_SEC = 20; // no heartbeat for this long -> show device Offline
+const STALE_AFTER_SEC = 8; // no heartbeat for this long -> show device Offline - kept to
+                            // about 3x the ESP32's STATUS_PUSH_INTERVAL_MS (config.h), enough
+                            // margin to absorb a single missed push without false-flagging
 
 let lastKnownBreaker = {};
 let previousIsOn = null;  // used to detect ON<->OFF transitions for the flip animation + toast
@@ -186,7 +188,7 @@ db.ref("breaker").on("value", (snap) => {
 
 // Re-check staleness every few seconds even without new Firebase data,
 // so a device that silently dies still flips to "Offline" on screen.
-setInterval(renderBreakerStatus, 5000);
+setInterval(renderBreakerStatus, 2000);
 
 // ---------------------------------------------------------------------------
 // Operator registration + roster
