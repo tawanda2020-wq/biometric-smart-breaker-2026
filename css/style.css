@@ -64,6 +64,13 @@ body {
     Roboto, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   line-height: 1.47;
+  /* Safety net: ANY single element overflowing its container (a negative
+     margin, an unwrapped long string, a table) makes the WHOLE page
+     scrollable sideways by default - this caps it at the body level so one
+     overflowing element in the future stays a local bug, not a page-wide
+     one, the way the nav-toggle's negative margin just was. */
+  overflow-x: hidden;
+  max-width: 100vw;
 }
 
 a { color: inherit; text-decoration: none; }
@@ -169,7 +176,10 @@ p { color: var(--text-secondary); }
   border: none;
   cursor: pointer;
   padding: 8px;
-  margin: -8px;
+  margin: -8px 0; /* vertical only - a negative RIGHT margin here pushed this
+                      past the container's edge and caused page-wide
+                      horizontal scroll on mobile, which is worse than the
+                      few px of extra tap-target compactness was worth */
   color: var(--text);
   flex-shrink: 0;
 }
