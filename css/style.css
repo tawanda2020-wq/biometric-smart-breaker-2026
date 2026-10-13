@@ -37,6 +37,16 @@
   --shadow-md: 0 12px 32px rgba(21, 25, 46, 0.09);
   --shadow-lg: 0 20px 48px rgba(21, 25, 46, 0.14);
 
+  /* Colour-matched glow shadows - the thing a plain grey shadow doesn't
+     give you. Used sparingly: on hover/focus for interactive elements and
+     on the one or two "this is alive" indicators (the breaker orb), not
+     applied everywhere at once. */
+  --glow-accent: 0 8px 28px -6px color-mix(in srgb, var(--accent) 55%, transparent);
+  --glow-success: 0 8px 28px -6px color-mix(in srgb, var(--success) 55%, transparent);
+  --glow-danger: 0 8px 28px -6px color-mix(in srgb, var(--danger) 55%, transparent);
+  --glow-violet: 0 8px 28px -6px color-mix(in srgb, var(--accent-2) 50%, transparent);
+  --glow-teal: 0 8px 28px -6px color-mix(in srgb, var(--accent-3) 50%, transparent);
+
   --max-width: 1140px;
   --nav-height: 60px;
 
@@ -80,6 +90,15 @@ h1, h2, h3, h4 {
   font-weight: 700;
   letter-spacing: -0.03em;
   line-height: 1.05;
+  /* Solid colour first as the fallback for anything that doesn't support
+     background-clip:text; the gradient below replaces it visually where
+     supported, which is effectively everywhere now. A quiet version of the
+     effect - still clearly the page's own ink colour, not a rainbow. */
+  color: var(--text);
+  background: linear-gradient(100deg, var(--text) 35%, var(--accent) 90%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 .headline {
   font-size: clamp(1.8rem, 3.6vw, 2.75rem);
@@ -211,8 +230,8 @@ p { color: var(--text-secondary); }
   white-space: nowrap;
 }
 .btn:active { transform: scale(0.97); }
-.btn-primary { background: var(--accent); color: #fff; }
-.btn-primary:hover { background: var(--accent-hover); }
+.btn-primary { background: var(--accent); color: #fff; box-shadow: 0 2px 10px -4px color-mix(in srgb, var(--accent) 50%, transparent); }
+.btn-primary:hover { background: var(--accent-hover); box-shadow: var(--glow-accent); transform: translateY(-1px); }
 .btn-secondary { background: var(--surface); color: var(--text); border-color: var(--border); }
 .btn-secondary:hover { background: var(--border); }
 .btn-ghost { color: var(--accent); }
@@ -221,8 +240,8 @@ p { color: var(--text-secondary); }
 .btn-lg { padding: 14px 28px; font-size: 1.05rem; }
 .btn-sm { padding: 5px 14px; font-size: 0.82rem; }
 .btn:disabled { opacity: 0.5; cursor: not-allowed; }
-.btn-danger { background: var(--danger); color: #fff; }
-.btn-danger:hover:not(:disabled) { background: color-mix(in srgb, var(--danger) 85%, black); }
+.btn-danger { background: var(--danger); color: #fff; box-shadow: 0 2px 10px -4px color-mix(in srgb, var(--danger) 50%, transparent); }
+.btn-danger:hover:not(:disabled) { background: color-mix(in srgb, var(--danger) 85%, black); box-shadow: var(--glow-danger); transform: translateY(-1px); }
 
 /* ---------- Sections ---------- */
 .section { padding: 88px 0; }
@@ -233,8 +252,12 @@ p { color: var(--text-secondary); }
 .hero {
   padding: 140px 0 100px;
   text-align: center;
+  /* Two overlapping glows instead of one flat radial - a second, smaller,
+     more saturated violet glow offset from the main blue one gives the
+     backdrop actual depth instead of a single even wash. */
   background:
-    radial-gradient(ellipse 80% 60% at 50% -10%, color-mix(in srgb, var(--accent) 16%, transparent), transparent);
+    radial-gradient(ellipse 70% 55% at 38% -10%, color-mix(in srgb, var(--accent) 20%, transparent), transparent),
+    radial-gradient(ellipse 50% 45% at 72% 0%, color-mix(in srgb, var(--accent-2) 14%, transparent), transparent);
 }
 .hero p.subhead { max-width: 640px; margin: 18px auto 34px; }
 .hero-cta { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
@@ -271,7 +294,7 @@ p { color: var(--text-secondary); }
 @media (max-width: 480px) {
   .card { padding: 22px; }
 }
-.card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); }
+.card:hover { transform: translateY(-3px); box-shadow: var(--glow-accent); border-color: color-mix(in srgb, var(--accent) 30%, var(--border)); }
 .icon-circle-lg {
   width: 44px; height: 44px;
   border-radius: 12px;
@@ -279,6 +302,9 @@ p { color: var(--text-secondary); }
   color: var(--accent);
   display: flex; align-items: center; justify-content: center;
   margin-bottom: 18px;
+  /* A soft halo rather than a flat-filled chip - the glow a plain tinted
+     background doesn't give you. */
+  box-shadow: 0 0 0 7px color-mix(in srgb, var(--accent) 7%, transparent);
 }
 .icon-circle-lg .icon { width: 22px; height: 22px; }
 .icon-circle-lg.step-num { font-size: 1.15rem; font-weight: 700; }
@@ -317,12 +343,12 @@ p { color: var(--text-secondary); }
   flex-shrink: 0;
 }
 .icon-chip .icon { width: 19px; height: 19px; }
-.icon-chip.blue   { background: var(--accent-soft);   color: var(--accent); }
-.icon-chip.violet { background: var(--accent-2-soft); color: var(--accent-2); }
-.icon-chip.teal   { background: var(--accent-3-soft); color: var(--accent-3); }
-.icon-chip.green  { background: var(--success-soft);  color: var(--success); }
-.icon-chip.amber  { background: var(--warn-soft);     color: var(--warn); }
-.icon-chip.red    { background: var(--danger-soft);   color: var(--danger); }
+.icon-chip.blue   { background: var(--accent-soft);   color: var(--accent);   box-shadow: 0 0 0 6px color-mix(in srgb, var(--accent) 6%, transparent); }
+.icon-chip.violet { background: var(--accent-2-soft); color: var(--accent-2); box-shadow: 0 0 0 6px color-mix(in srgb, var(--accent-2) 6%, transparent); }
+.icon-chip.teal   { background: var(--accent-3-soft); color: var(--accent-3); box-shadow: 0 0 0 6px color-mix(in srgb, var(--accent-3) 6%, transparent); }
+.icon-chip.green  { background: var(--success-soft);  color: var(--success); box-shadow: 0 0 0 6px color-mix(in srgb, var(--success) 6%, transparent); }
+.icon-chip.amber  { background: var(--warn-soft);     color: var(--warn);    box-shadow: 0 0 0 6px color-mix(in srgb, var(--warn) 6%, transparent); }
+.icon-chip.red    { background: var(--danger-soft);   color: var(--danger); box-shadow: 0 0 0 6px color-mix(in srgb, var(--danger) 6%, transparent); }
 
 /* Optional coloured top edge on a panel, for quick visual scanning */
 .panel-accent { border-top: 3px solid var(--accent); }
@@ -445,6 +471,7 @@ tr:last-child td { border-bottom: none; }
   color: var(--accent);
   display: flex; align-items: center; justify-content: center;
   font-size: 1.5rem; margin-bottom: 18px;
+  box-shadow: 0 0 0 8px color-mix(in srgb, var(--accent) 6%, transparent);
 }
 
 /* ---------- Footer ---------- */
@@ -528,6 +555,10 @@ footer .container { display: flex; justify-content: space-between; flex-wrap: wr
   background: color-mix(in srgb, var(--success) 16%, transparent);
   color: var(--success);
   border-color: color-mix(in srgb, var(--success) 40%, transparent);
+  box-shadow: var(--glow-success); /* steady glow underneath the pulseRing animation's
+                                       expanding ring - the ring comes and goes, this
+                                       stays, so "energised" reads at a glance even
+                                       between pulses */
   animation: pulseRing 2.2s ease-out infinite;
 }
 /* Before the device's first heartbeat ever arrives, a flat grey orb reads as
