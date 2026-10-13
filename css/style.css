@@ -1,51 +1,60 @@
 /* ==========================================================================
    Biometric Fingerprint Smart Circuit Breaker — shared design system
-   Visual language inspired by apple.com: large confident type, generous
-   whitespace, neutral palette + one accent colour, soft rounded corners,
-   a blurred sticky nav, subtle motion. Plain CSS, no framework.
+   Dark, atmospheric base with glass-panel surfaces: deep navy/indigo
+   background, translucent blurred panels, colour-matched glows instead of
+   grey drop shadows, a floating pill nav. Large confident type, generous
+   whitespace, soft rounded corners, subtle motion. Plain CSS, no framework.
    ========================================================================== */
 :root {
-  --bg: #ffffff;
-  --bg-tint: #dde4fb;
-  --surface: #eaeefc;
-  --surface-2: #ffffff;
-  --text: #15192e;
-  --text-secondary: #555b74;
-  --border: #c9d1f0;
+  --bg: #0a0b16;
+  --bg-tint: #0a0b16;
+  --surface: rgba(255, 255, 255, 0.045);
+  --surface-2: rgba(255, 255, 255, 0.065);
+  --text: #f4f5fb;
+  --text-secondary: #99a0c2;
+  --border: rgba(255, 255, 255, 0.11);
 
-  --accent: #3b5bfd;
-  --accent-hover: #2d4ce0;
-  --accent-soft: #eef1ff;
-  --accent-2: #8b5cf6;
-  --accent-2-soft: #f3eeff;
-  --accent-3: #0d9488;
-  --accent-3-soft: #e6f7f5;
+  --accent: #5b7cff;
+  --accent-hover: #7490ff;
+  --accent-soft: rgba(91, 124, 255, 0.16);
+  --accent-2: #a78bfa;
+  --accent-2-soft: rgba(167, 139, 250, 0.16);
+  --accent-3: #2dd4bf;
+  --accent-3-soft: rgba(45, 212, 191, 0.16);
 
-  --success: #16a34a;
-  --success-soft: #e8f8ee;
-  --danger: #e11d48;
-  --danger-soft: #fdeaf0;
-  --warn: #d97706;
-  --warn-soft: #fdf1e0;
+  --success: #34d399;
+  --success-soft: rgba(52, 211, 153, 0.16);
+  --danger: #fb7185;
+  --danger-soft: rgba(251, 113, 133, 0.16);
+  --warn: #fbbf24;
+  --warn-soft: rgba(251, 191, 36, 0.16);
 
   --radius-sm: 10px;
   --radius-md: 16px;
   --radius-lg: 20px;
   --radius-pill: 980px;
 
-  --shadow-sm: 0 2px 8px rgba(21, 25, 46, 0.05);
-  --shadow-md: 0 12px 32px rgba(21, 25, 46, 0.09);
-  --shadow-lg: 0 20px 48px rgba(21, 25, 46, 0.14);
+  /* Dark grounding shadows - on a dark background these read as depth/
+     separation from what's behind, not as "lifted off a white page", so
+     they lean on black + blur rather than a tinted navy. */
+  --shadow-sm: 0 2px 12px rgba(0, 0, 0, 0.35);
+  --shadow-md: 0 14px 38px rgba(0, 0, 0, 0.45);
+  --shadow-lg: 0 24px 56px rgba(0, 0, 0, 0.55);
 
-  /* Colour-matched glow shadows - the thing a plain grey shadow doesn't
-     give you. Used sparingly: on hover/focus for interactive elements and
-     on the one or two "this is alive" indicators (the breaker orb), not
-     applied everywhere at once. */
-  --glow-accent: 0 8px 28px -6px color-mix(in srgb, var(--accent) 55%, transparent);
-  --glow-success: 0 8px 28px -6px color-mix(in srgb, var(--success) 55%, transparent);
-  --glow-danger: 0 8px 28px -6px color-mix(in srgb, var(--danger) 55%, transparent);
-  --glow-violet: 0 8px 28px -6px color-mix(in srgb, var(--accent-2) 50%, transparent);
-  --glow-teal: 0 8px 28px -6px color-mix(in srgb, var(--accent-3) 50%, transparent);
+  /* Colour-matched glow shadows - the actual point of a dark theme for this
+     page: the same glow values barely showed on a white background, and
+     pop immediately against this one. Used on hover/focus for interactive
+     elements and the "this is alive" indicators (the breaker orb). */
+  --glow-accent: 0 8px 32px -4px color-mix(in srgb, var(--accent) 65%, transparent);
+  --glow-success: 0 8px 32px -4px color-mix(in srgb, var(--success) 65%, transparent);
+  --glow-danger: 0 8px 32px -4px color-mix(in srgb, var(--danger) 65%, transparent);
+  --glow-violet: 0 8px 32px -4px color-mix(in srgb, var(--accent-2) 60%, transparent);
+  --glow-teal: 0 8px 32px -4px color-mix(in srgb, var(--accent-3) 60%, transparent);
+
+  /* Shared glass treatment - frosted, translucent, a hairline highlight
+     border rather than a shadow to define the edge. Applied via `backdrop-
+     filter` + this blur amount on every panel/card/nav/toast surface. */
+  --glass-blur: blur(22px) saturate(160%);
 
   --max-width: 1140px;
   --nav-height: 60px;
@@ -58,12 +67,21 @@ html { scroll-behavior: smooth; }
 
 body {
   margin: 0;
-  background: var(--bg-tint);
   color: var(--text);
   font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
     Roboto, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   line-height: 1.47;
+  /* The atmosphere: two large, soft brand-coloured glows fixed to the
+     viewport over the deep navy base - the same role the dusk-sky photo
+     plays on sites like this, built from the page's own accent colours
+     instead of a stock image. */
+  background:
+    radial-gradient(ellipse 65% 50% at 15% -8%, color-mix(in srgb, var(--accent) 22%, transparent), transparent 60%),
+    radial-gradient(ellipse 55% 45% at 100% 8%, color-mix(in srgb, var(--accent-2) 16%, transparent), transparent 60%),
+    radial-gradient(ellipse 60% 40% at 50% 110%, color-mix(in srgb, var(--accent-3) 10%, transparent), transparent 60%),
+    var(--bg);
+  background-attachment: fixed;
   /* Safety net: ANY single element overflowing its container (a negative
      margin, an unwrapped long string, a table) makes the WHOLE page
      scrollable sideways by default - this caps it at the body level so one
@@ -129,23 +147,36 @@ p { color: var(--text-secondary); }
 .text-tight { color: var(--text); }
 
 /* ---------- Nav ---------- */
+/* A floating glass pill, inset from the viewport edges, rather than a bar
+   spanning full-bleed - the signature element of the reference direction:
+   it reads as an object floating over the page's own atmosphere instead of
+   a flat strip pinned to the top of it. */
 .nav {
   position: sticky;
-  top: 0;
+  top: 14px;
   z-index: 100;
+  max-width: calc(var(--max-width) + 48px);
+  margin: 14px auto 0;
   height: var(--nav-height);
   display: flex;
   align-items: center;
-  backdrop-filter: saturate(180%) blur(20px);
-  -webkit-backdrop-filter: saturate(180%) blur(20px);
-  background: color-mix(in srgb, var(--bg) 75%, transparent);
-  border-bottom: 1px solid var(--border);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  background: color-mix(in srgb, var(--bg) 55%, transparent);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-pill);
+  box-shadow: var(--shadow-md);
 }
 .nav .container {
   display: flex;
   align-items: center;
   justify-content: space-between;
   width: 100%;
+  padding: 0 10px 0 22px;
+}
+@media (max-width: 480px) {
+  .nav { margin: 10px 16px 0; top: 10px; }
+  .nav .container { padding: 0 8px 0 18px; }
 }
 .nav-brand {
   display: flex;
@@ -192,15 +223,19 @@ p { color: var(--text-secondary); }
      itself - that's the squashed/unprofessional look being fixed here. */
   .nav-links {
     position: absolute;
-    top: 100%;
+    top: calc(100% + 8px);
     left: 0;
     right: 0;
     flex-direction: column;
     align-items: stretch;
     gap: 4px;
-    background: var(--bg);
-    border-bottom: 1px solid var(--border);
-    padding: 8px 24px 16px;
+    background: color-mix(in srgb, var(--bg) 70%, transparent);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-lg);
+    padding: 8px 20px 16px;
     max-height: 0;
     overflow: hidden;
     opacity: 0;
@@ -262,12 +297,12 @@ p { color: var(--text-secondary); }
 .hero {
   padding: 140px 0 100px;
   text-align: center;
-  /* Two overlapping glows instead of one flat radial - a second, smaller,
-     more saturated violet glow offset from the main blue one gives the
-     backdrop actual depth instead of a single even wash. */
+  /* body now carries the page's ambient glow (see :root/body above) - this
+     is just one extra, tighter, brighter glow directly behind the headline
+     itself, so the hero still reads as the brightest point on the page
+     without fighting the body's wider wash underneath it. */
   background:
-    radial-gradient(ellipse 70% 55% at 38% -10%, color-mix(in srgb, var(--accent) 20%, transparent), transparent),
-    radial-gradient(ellipse 50% 45% at 72% 0%, color-mix(in srgb, var(--accent-2) 14%, transparent), transparent);
+    radial-gradient(ellipse 60% 70% at 50% 0%, color-mix(in srgb, var(--accent) 16%, transparent), transparent 70%);
 }
 .hero p.subhead { max-width: 640px; margin: 18px auto 34px; }
 .hero-cta { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
@@ -296,10 +331,12 @@ p { color: var(--text-secondary); }
 }
 .card {
   background: var(--surface);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   padding: 32px;
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
 }
 @media (max-width: 480px) {
   .card { padding: 22px; }
@@ -324,6 +361,8 @@ p { color: var(--text-secondary); }
 /* ---------- Panels (dashboard) ---------- */
 .panel {
   background: var(--surface-2);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   padding: 28px;
@@ -370,6 +409,8 @@ p { color: var(--text-secondary); }
    reads as "handle carefully" at a glance, before anyone even reads the text. */
 .panel-danger {
   background: var(--surface-2);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
   border: 1px dashed var(--danger);
   border-radius: var(--radius-lg);
   padding: 28px;
@@ -467,10 +508,12 @@ tr:last-child td { border-bottom: none; }
 .auth-card {
   width: 100%; max-width: 380px;
   background: var(--surface-2);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   padding: 36px 32px;
-  box-shadow: var(--shadow-sm);
+  box-shadow: var(--shadow-md);
 }
 @media (max-width: 420px) {
   .auth-card { padding: 28px 20px; }
@@ -626,6 +669,8 @@ footer .container { display: flex; justify-content: space-between; flex-wrap: wr
 }
 .kpi-card {
   background: var(--surface-2);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-sm);
@@ -702,7 +747,9 @@ footer .container { display: flex; justify-content: space-between; flex-wrap: wr
   display: flex;
   align-items: flex-start;
   gap: 12px;
-  background: var(--surface-2);
+  background: color-mix(in srgb, var(--bg) 60%, transparent);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-lg);
