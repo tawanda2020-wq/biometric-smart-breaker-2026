@@ -65,6 +65,9 @@ img, svg { display: block; max-width: 100%; }
   margin: 0 auto;
   padding: 0 24px;
 }
+@media (max-width: 480px) {
+  .container { padding: 0 16px; }
+}
 
 /* ---------- Typography ---------- */
 h1, h2, h3, h4 {
@@ -138,6 +141,60 @@ p { color: var(--text-secondary); }
 }
 .nav-links a:hover { color: var(--text); }
 
+/* Hidden on desktop; nav.js shows/hides it per breakpoint via CSS alone -
+   no JS media-query listener needed, the button is just display:none above
+   the breakpoint so it's inert there regardless of its aria-expanded state. */
+.nav-toggle {
+  display: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  margin: -8px;
+  color: var(--text);
+  flex-shrink: 0;
+}
+
+@media (max-width: 760px) {
+  .nav-toggle { display: flex; }
+
+  /* Collapses into a dropdown sheet anchored to the (sticky, so positioned)
+     .nav bar, rather than squeezing every link into the 60px-tall bar
+     itself - that's the squashed/unprofessional look being fixed here. */
+  .nav-links {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 4px;
+    background: var(--bg);
+    border-bottom: 1px solid var(--border);
+    padding: 8px 24px 16px;
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    pointer-events: none;
+    transition: max-height 0.25s ease, opacity 0.2s ease;
+  }
+  .nav.nav-open .nav-links {
+    max-height: 70vh;
+    overflow-y: auto;
+    opacity: 1;
+    pointer-events: auto;
+  }
+  .nav-links a, .nav-links .btn { width: 100%; }
+  .nav-links a {
+    padding: 12px 4px;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.95rem;
+  }
+  .nav-links a:last-of-type { border-bottom: none; }
+  .nav-links .btn { justify-content: center; margin-top: 6px; }
+  #connIndicator { padding: 10px 4px; border-bottom: 1px solid var(--border); }
+}
+
 /* ---------- Buttons ---------- */
 .btn {
   display: inline-flex;
@@ -181,6 +238,19 @@ p { color: var(--text-secondary); }
 }
 .hero p.subhead { max-width: 640px; margin: 18px auto 34px; }
 .hero-cta { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+.hero-cta .btn { width: 100%; max-width: 280px; }
+@media (min-width: 420px) {
+  .hero-cta .btn { width: auto; }
+}
+
+@media (max-width: 640px) {
+  /* 140px/100px of vertical padding is a desktop flourish - on a phone it
+     pushes the actual headline (and everything after it) below the fold
+     for no reason. */
+  .hero { padding: 76px 0 56px; }
+  .section { padding: 56px 0; }
+  .section-tight { padding: 36px 0; }
+}
 
 /* ---------- Feature grid / cards ---------- */
 .grid {
@@ -197,6 +267,9 @@ p { color: var(--text-secondary); }
   border-radius: var(--radius-lg);
   padding: 32px;
   transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+@media (max-width: 480px) {
+  .card { padding: 22px; }
 }
 .card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); }
 .icon-circle-lg {
@@ -221,12 +294,16 @@ p { color: var(--text-secondary); }
   box-shadow: var(--shadow-sm);
 }
 .panel + .panel { margin-top: 20px; }
+@media (max-width: 480px) {
+  .panel, .panel-danger { padding: 18px; }
+}
 .panel-header {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   justify-content: space-between;
   margin-bottom: 20px;
-  gap: 12px;
+  gap: 8px 12px;
 }
 .panel-header h2 { font-size: 1.1rem; margin: 0; font-weight: 600; }
 .panel-title { display: flex; align-items: center; gap: 14px; }
@@ -358,6 +435,9 @@ tr:last-child td { border-bottom: none; }
   border-radius: var(--radius-lg);
   padding: 36px 32px;
   box-shadow: var(--shadow-sm);
+}
+@media (max-width: 420px) {
+  .auth-card { padding: 28px 20px; }
 }
 .auth-card .icon-badge {
   width: 52px; height: 52px; border-radius: 14px;
@@ -524,6 +604,9 @@ footer .container { display: flex; justify-content: space-between; flex-wrap: wr
 .table-scroll {
   max-height: 360px;
   overflow-y: auto;
+  overflow-x: auto; /* the event/operator tables have nowrap cells - without this,
+                        a narrow phone would scroll the WHOLE PAGE sideways instead
+                        of just this table */
   border-radius: var(--radius-sm);
   border: 1px solid var(--border);
 }
