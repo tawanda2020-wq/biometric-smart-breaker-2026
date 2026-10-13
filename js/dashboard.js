@@ -437,3 +437,69 @@ function renderEvents(eventsObj) {
 }
 
 db.ref("events").limitToLast(EVENT_LOG_LIMIT).on("value", (snap) => renderEvents(snap.val()));
+
+// ---------------------------------------------------------------------------
+// Danger zone: full sensor wipe + operator reset
+//
+// Mirrors how enrolment already works - this writes a request to Firebase,
+// and the device (while idle) picks it up, does the erase, and clears the
+// request itself. Nothing here talks to the sensor directly; the dashboard
+// only ever asks, it never assumes the device complied.
+// ---------------------------------------------------------------------------
+const wipeConfirmInput = document.getElementById("wipeConfirmInput");
+const wipeBtn = document.getElementById("wipeBtn");
+const wipeMsg = document.getElementById("wipeMsg");
+
+wipeConfirmInput.addEventListener("input", () => {
+  wipeBtn.disabled = wipeConfirmInput.value.trim() !== "WIPE";
+});
+
+let wipeMsgHideTimer = null;
+function setWipeMsg(text, cls, autoHideMs = 0) {
+  clearTimeout(wipeMsgHideTimer);
+  wipeMsg.textContent = text;
+  wipeMsg.className = "form-msg " + cls + " show";
+  if (autoHideMs > 0) wipeMsgHideTimer = setTimeout(() => wipeMsg.classList.remove("show"), autoHideMs);
+}
+
+wipeBtn.addEventListener("click", async () => {
+  if (wipeConfirmInput.value.trim() !== "WIPE") return;
+  wipeBtn.disabled = true;
+  wipeConfirmInput.disabled = true;
+  try {
+    await db.ref("system").update({ wipeRequested: true, wipeRequestedAt: nowSeconds() });
+    setWipeMsg("Request sent - waiting for the device to pick it up (it only checks while idle, so this can take a few seconds).", "ok");
+    showToast({
+      type: "warn",
+      icon: "alert-triangle",
+      title: "Sensor wipe requested",
+      message: "The device will erase its fingerprint database and restart shortly.",
+    });
+  } catch (err) {
+    setWipeMsg("Could not send the request: " + err.message, "err");
+    showToast({ type: "error", title: "Wipe request failed", message: err.message });
+    wipeBtn.disabled = false;
+    wipeConfirmInput.disabled = false;
+  }
+});
+
+let previousWipeRequested = null; // null = first snapshot, don't toast on page load
+db.ref("system").on("value", (snap) => {
+  const sys = snap.val() || {};
+  const requested = !!sys.wipeRequested;
+
+  if (previousWipeRequested === true && requested === false) {
+    // The device cleared the flag itself - that's completion, not our own click.
+    setWipeMsg("Done. Every fingerprint was erased and all operators are back to “Pending scan”.", "ok", 10000);
+    showToast({
+      type: "success",
+      icon: "check-circle",
+      title: "Sensor wipe complete",
+      message: "The device restarted with a clean fingerprint database.",
+    });
+    wipeConfirmInput.value = "";
+    wipeConfirmInput.disabled = false;
+    wipeBtn.disabled = true;
+  }
+  previousWipeRequested = requested;
+});

@@ -202,6 +202,34 @@
       </details>
     </div>
   </div>
+
+  <!-- Danger zone -->
+  <div class="panel panel-danger fade-in" style="margin-top:20px" id="dangerZonePanel">
+    <div class="panel-header">
+      <div class="panel-title">
+        <div class="icon-chip red"><span class="icon" data-icon="alert-triangle"></span></div>
+        <h2>Reset Fingerprint Database</h2>
+      </div>
+    </div>
+    <p class="small" style="margin-top:0">
+      Erases <strong>every</strong> fingerprint stored on the device's sensor and
+      puts <strong>every</strong> registered operator back to &ldquo;Pending
+      scan&rdquo; so they can re-enrol with a clean slate. Use this if operators
+      keep getting denied even though they definitely registered and scanned
+      correctly &mdash; it usually means old leftover fingerprints from earlier
+      bench testing are still on the sensor, competing with the real ones.
+      This cannot be undone, and the device will restart on its own once it's done.
+    </p>
+    <div class="field">
+      <label for="wipeConfirmInput">Type <strong class="mono">WIPE</strong> to enable the button</label>
+      <input type="text" id="wipeConfirmInput" autocomplete="off" placeholder="WIPE">
+    </div>
+    <button type="button" class="btn btn-danger flex items-center gap-12" id="wipeBtn" disabled>
+      <span class="icon icon-sm" data-icon="alert-triangle"></span>
+      Erase sensor &amp; reset all operators
+    </button>
+    <div id="wipeMsg" class="form-msg"></div>
+  </div>
 </main>
 
 <footer>

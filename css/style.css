@@ -164,6 +164,8 @@ p { color: var(--text-secondary); }
 .btn-lg { padding: 14px 28px; font-size: 1.05rem; }
 .btn-sm { padding: 5px 14px; font-size: 0.82rem; }
 .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.btn-danger { background: var(--danger); color: #fff; }
+.btn-danger:hover:not(:disabled) { background: color-mix(in srgb, var(--danger) 85%, black); }
 
 /* ---------- Sections ---------- */
 .section { padding: 88px 0; }
@@ -249,6 +251,16 @@ p { color: var(--text-secondary); }
 .panel-accent { border-top: 3px solid var(--accent); }
 .panel-accent.violet { border-top-color: var(--accent-2); }
 .panel-accent.teal { border-top-color: var(--accent-3); }
+
+/* A destructive admin action gets its own visual register, deliberately
+   different from the informational panels above it - a dashed red border
+   reads as "handle carefully" at a glance, before anyone even reads the text. */
+.panel-danger {
+  background: var(--surface-2);
+  border: 1px dashed var(--danger);
+  border-radius: var(--radius-lg);
+  padding: 28px;
+}
 
 .page-header { margin-bottom: 28px; }
 .page-header h1 { font-size: 1.7rem; margin: 0 0 4px; letter-spacing: -0.02em; }
