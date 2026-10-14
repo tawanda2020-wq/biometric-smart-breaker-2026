@@ -2,8 +2,8 @@
   auth-check.js — simple client-side admin gate for the dashboard pages.
 */
 
-const ADMIN_USERNAME = "admin";
-const ADMIN_PASSWORD = "Breaker@2026"; 
+const ADMIN_USERNAME = "SamyZays";
+const ADMIN_PASSWORD = "!2026amyZays@1234";
 
 const SESSION_KEY = "biometricBreakerAdminSession";
 
