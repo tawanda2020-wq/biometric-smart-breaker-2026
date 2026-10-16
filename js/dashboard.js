@@ -80,9 +80,14 @@ function setNumberAnimated(elId, value) {
 // ---------------------------------------------------------------------------
 // Live breaker status - animated orb + detailed plain-language notes
 // ---------------------------------------------------------------------------
-const STALE_AFTER_SEC = 8; // no heartbeat for this long -> show device Offline - kept to
-                            // about 3x the ESP32's STATUS_PUSH_INTERVAL_MS (config.h), enough
-                            // margin to absorb a single missed push without false-flagging
+const STALE_AFTER_SEC = 12; // no heartbeat RECEIVED for this long -> show device Offline.
+                             // About 5x the ESP32's STATUS_PUSH_INTERVAL_MS (config.h), so a
+                             // slow request or two never false-flags the device as offline.
+// Timed from when THIS browser last received a heartbeat, not by comparing the
+// device's lastSeen to the browser clock - the two clocks can disagree by
+// several seconds, which made "Device offline" flicker on a healthy device.
+let lastHeartbeatReceivedAt = 0; // Date.now() of the last heartbeat change seen
+let lastHeartbeatKey = null;
 
 let lastKnownBreaker = {};
 let previousIsOn = null;  // used to detect ON<->OFF transitions for the flip animation + toast
@@ -91,7 +96,8 @@ let previousFresh = null; // used to detect device online<->offline transitions 
 function renderBreakerStatus() {
   const b = lastKnownBreaker;
   const isOn = b.status === "ON";
-  const fresh = b.lastSeen && (nowSeconds() - b.lastSeen) < STALE_AFTER_SEC;
+  const fresh = lastHeartbeatReceivedAt > 0 &&
+    (Date.now() - lastHeartbeatReceivedAt) < STALE_AFTER_SEC * 1000;
 
   const orb = document.getElementById("breakerOrb");
   const statusText = document.getElementById("statusText");
@@ -183,6 +189,18 @@ function renderBreakerStatus() {
 
 db.ref("breaker").on("value", (snap) => {
   lastKnownBreaker = snap.val() || {};
+  const b = lastKnownBreaker;
+  const key = `${b.lastSeen || 0}|${b.beat || 0}`;
+  if (lastHeartbeatKey === null) {
+    // First snapshot on page load is just the stored value - only count it as
+    // live if the device's own timestamp says it's recent.
+    if (b.lastSeen && Math.abs(nowSeconds() - b.lastSeen) < STALE_AFTER_SEC * 2) {
+      lastHeartbeatReceivedAt = Date.now();
+    }
+  } else if (key !== lastHeartbeatKey) {
+    lastHeartbeatReceivedAt = Date.now();
+  }
+  lastHeartbeatKey = key;
   renderBreakerStatus();
 });
 
